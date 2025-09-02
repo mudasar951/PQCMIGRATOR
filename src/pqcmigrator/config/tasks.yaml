@@ -1,0 +1,158 @@
+# ======================================================
+# Scanner Agent Task
+# ======================================================
+scanner_task:
+  description: >
+    Interpret the user request: "{prompt}".
+
+    Use the available tools (TLS, SSH, Codebase, YARA) to detect:
+    - TLS certificates and their cryptographic properties
+    - SSH keys and their strength
+    - Codebase usage of weak algorithms and hardcoded secrets
+    - Potential key material via YARA patterns
+
+    Dynamically choose the appropriate tool(s) based on the input. For example:
+      - If input mentions "TLS" or a hostname, run TLSScannerTool
+      - If input mentions "SSH", run SSHScannerTool
+      - If input mentions "source code" or "repo", run CodeScannerTool
+      - If input mentions "files", run YARAScannerTool
+
+  expected_output: >
+    A JSON object with structured results for all scanned assets. Example:
+
+    {
+      "tls": [
+        {"host": "cytomate.net", "issuer": "...", "algorithm": "...", "key_size": 2048, "not_valid_after": "..."}
+      ],
+      "ssh": [
+        {"host": "10.0.0.1", "type": "ssh-rsa", "key_size": 2048, "fingerprint_sha256": "..."}
+      ],
+      "codebase": [
+        {"file": "main.py", "label": "Weak Algorithm (SHA1)", "match": "SHA1"}
+      ],
+      "yara": [
+        {"file": "id_rsa", "match": "Potential key material found"}
+      ]
+    }
+
+  agent: scanner
+
+
+# ======================================================
+# Risk Analyzer Agent Task
+# ======================================================
+risk_analyzer_task:
+  description: >
+    Take the JSON scan results produced by the scanner agent and evaluate each discovered asset.
+    For each asset, output :
+      - pq_risk (Low/Medium/High/Unknown)
+    Include explicit reasons for each risk (e.g., RSA-2048 < 3072, deprecated ssh-rsa key, SHA-1/MD5, TLS1.0/1.1,
+    weak ciphers, certificate expiry window, absence/presence of hybrid PQ KEM like X25519MLKEM768).
+    When key size or algorithm info is missing, mark Unknown and add a reason describing the missing field.
+
+  expected_output: >
+    A JSON list of all assets with assigned risk levels. Example:
+
+    [
+      {"asset": "TLS certificate for cytomate.net", "algorithm": "RSA", "key_size": 1024, "risk": "High", "reason": "RSA-2048 < 3072"},
+      {"asset": "SSH key on host 10.0.0.1", "algorithm": "ECDSA", "key_size": 256, "risk": "Medium", "reason": "ECDSA-256 < 256"}
+    ]
+
+  agent: risk_analyzer
+
+
+# # ======================================================
+# # Planner Agent Task
+# # ======================================================
+# planner_task:
+#   description: >
+#     Based on the ranked risks from the Risk Analyzer,
+#     create a comprehensive migration plan to Post-Quantum Cryptography (PQC).
+#     The plan must align with NIST PQC standards (SP 800-208) and global
+#     guidelines (ISO, ETSI).
+
+#     Include:
+#     - Migration priority order (highest risk first)
+#     - Recommended PQC algorithms (Kyber, Dilithium, SPHINCS+)
+#     - Rollout strategy (pilot, test, deploy)
+#     - Compatibility and compliance considerations
+#     - Rollback/safety checkpoints
+
+#   expected_output: >
+#     A detailed migration plan in JSON format. Example:
+
+#     {
+#       "plan": [
+#         {
+#           "asset": "TLS cert on cytomate.net",
+#           "current_algo": "RSA-1024",
+#           "risk": "High",
+#           "recommended_replacement": "CRYSTALS-Kyber",
+#           "priority": 1
+#         },
+#         {
+#           "asset": "SSH key on server 10.0.0.1",
+#           "current_algo": "ECDSA-256",
+#           "risk": "Medium",
+#           "recommended_replacement": "Dilithium",
+#           "priority": 2
+#         }
+#       ]
+#     }
+
+#   agent: planner
+
+
+# # ======================================================
+# # Migrator Agent Task
+# # ======================================================
+# migrator_task:
+#   description: >
+#     Simulate execution of the migration plan created by the Planner Agent.
+#     Replace classical algorithms with PQC algorithms where possible.
+#     Perform the following in simulation mode:
+#       - Generate new PQC keys/certificates
+#       - Update SSH/TLS configurations
+#       - Patch codebase to use PQC libraries
+#       - Create rollback points before each change
+
+#     If migration for an asset is not possible, flag it.
+
+#   expected_output: >
+#     A JSON migration execution report. Example:
+
+#     {
+#       "executed": [
+#         {"asset": "TLS cert cytomate.net", "action": "Replaced RSA-1024 with Kyber", "status": "Success"},
+#         {"asset": "SSH key 10.0.0.1", "action": "Replaced ECDSA-256 with Dilithium", "status": "Pending Reboot"}
+#       ],
+#       "failed": [
+#         {"asset": "Legacy library using DES", "reason": "PQC not supported by vendor"}
+#       ]
+#     }
+
+#   agent: migrator
+
+
+# # ======================================================
+# # Rollback Agent Task
+# # ======================================================
+# rollback_task:
+#   description: >
+#     Monitor migration process and perform rollback if a failure occurs.
+#     If rollback is triggered, restore the previous safe configuration
+#     of TLS/SSH/codebase from backup.
+
+#   expected_output: >
+#     A rollback status report. Example:
+
+#     {
+#       "rollback_triggered": true,
+#       "assets_restored": [
+#         "TLS cert cytomate.net (RSA-1024)",
+#         "SSH key on server 10.0.0.1 (ECDSA-256)"
+#       ],
+#       "status": "System restored to safe state"
+#     }
+
+#   agent: rollback

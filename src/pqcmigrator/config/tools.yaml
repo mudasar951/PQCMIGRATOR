@@ -1,0 +1,36 @@
+# ======================================================
+# Tools Configuration
+# ======================================================
+# This file maps tool names to their actual implementations
+
+TLSScannerTool:
+  class: "pqcmigrator.tools.custom_tool.TLSScannerTool"
+  description: "Scans a host for TLS certificate details including algorithm, key size, fingerprints."
+
+SSHScannerTool:
+  class: "pqcmigrator.tools.custom_tool.SSHScannerTool"
+  description: "Scans a host using ssh-keyscan to retrieve SSH key details (algorithm, size, fingerprints)."
+
+CodeScannerTool:
+  class: "pqcmigrator.tools.custom_tool.CodeScannerTool"
+  description: "Scans code files for secrets, credentials, and weak cryptographic algorithm usage."
+
+YARAScannerTool:
+  class: "pqcmigrator.tools.custom_tool.YARAScannerTool"
+  description: "Simulated YARA scanner to detect key material. Replace with yara-python for production."
+
+RiskAnalyzerTool:
+  class: "pqcmigrator.tools.custom_tool.RiskAnalyzerTool"
+  description: "Evaluates cryptographic assets from scan results and assigns risk levels."
+
+# PlannerTool:
+#   class: "pqcmigrator.tools.custom_tool.PlannerTool"
+#   description: "Creates a PQC migration plan based on risks, mapping classical algorithms to NIST PQC replacements."
+
+# MigratorTool:
+#   class: "pqcmigrator.tools.custom_tool.MigratorTool"
+#   description: "Executes the migration plan (simulated) by generating PQC keys/certs and updating configs."
+
+# RollbackTool:
+#   class: "pqcmigrator.tools.custom_tool.RollbackTool"
+#   description: "Restores system state if migration failed using backups."

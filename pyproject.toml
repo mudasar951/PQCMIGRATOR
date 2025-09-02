@@ -1,0 +1,33 @@
+[project]
+name = "pqcmigrator"
+version = "0.1.0"
+description = "PQCMigrator using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[tools]>=0.175.0,<1.0.0"
+]
+
+[project.scripts]
+pqcmigrator = "pqcmigrator.main:run"
+run_crew = "pqcmigrator.main:run"
+train = "pqcmigrator.main:train"
+replay = "pqcmigrator.main:replay"
+test = "pqcmigrator.main:test"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"
+tools = [
+    "pqcmigrator.tools.custom_tool.TLSScannerTool",
+    "pqcmigrator.tools.custom_tool.SSHScannerTool",
+    "pqcmigrator.tools.custom_tool.CodeScannerTool",
+    "pqcmigrator.tools.custom_tool.YARAScannerTool",
+    "pqcmigrator.tools.custom_tool.RiskAnalyzerTool",
+    "pqcmigrator.tools.custom_tool.PlannerTool",
+    "pqcmigrator.tools.custom_tool.MigratorTool",
+    "pqcmigrator.tools.custom_tool.RollbackTool"
+]
