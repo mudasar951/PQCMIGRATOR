@@ -38,27 +38,27 @@ scanner_task:
   agent: scanner
 
 
-# ======================================================
-# Risk Analyzer Agent Task
-# ======================================================
-risk_analyzer_task:
-  description: >
-    Take the JSON scan results produced by the scanner agent and evaluate each discovered asset.
-    For each asset, output :
-      - pq_risk (Low/Medium/High/Unknown)
-    Include explicit reasons for each risk (e.g., RSA-2048 < 3072, deprecated ssh-rsa key, SHA-1/MD5, TLS1.0/1.1,
-    weak ciphers, certificate expiry window, absence/presence of hybrid PQ KEM like X25519MLKEM768).
-    When key size or algorithm info is missing, mark Unknown and add a reason describing the missing field.
+# # ======================================================
+# # Risk Analyzer Agent Task
+# # ======================================================
+# risk_analyzer_task:
+#   description: >
+#     Take the JSON scan results produced by the scanner agent and evaluate each discovered asset.
+#     For each asset, output :
+#       - pq_risk (Low/Medium/High/Unknown)
+#     Include explicit reasons for each risk (e.g., RSA-2048 < 3072, deprecated ssh-rsa key, SHA-1/MD5, TLS1.0/1.1,
+#     weak ciphers, certificate expiry window, absence/presence of hybrid PQ KEM like X25519MLKEM768).
+#     When key size or algorithm info is missing, mark Unknown and add a reason describing the missing field.
 
-  expected_output: >
-    A JSON list of all assets with assigned risk levels. Example:
+#   expected_output: >
+#     A JSON list of all assets with assigned risk levels. Example:
 
-    [
-      {"asset": "TLS certificate for cytomate.net", "algorithm": "RSA", "key_size": 1024, "risk": "High", "reason": "RSA-2048 < 3072"},
-      {"asset": "SSH key on host 10.0.0.1", "algorithm": "ECDSA", "key_size": 256, "risk": "Medium", "reason": "ECDSA-256 < 256"}
-    ]
+#     [
+#       {"asset": "TLS certificate for cytomate.net", "algorithm": "RSA", "key_size": 1024, "risk": "High", "reason": "RSA-2048 < 3072"},
+#       {"asset": "SSH key on host 10.0.0.1", "algorithm": "ECDSA", "key_size": 256, "risk": "Medium", "reason": "ECDSA-256 < 256"}
+#     ]
 
-  agent: risk_analyzer
+#   agent: risk_analyzer
 
 
 # # ======================================================

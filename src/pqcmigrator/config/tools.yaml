@@ -19,9 +19,9 @@ YARAScannerTool:
   class: "pqcmigrator.tools.custom_tool.YARAScannerTool"
   description: "Simulated YARA scanner to detect key material. Replace with yara-python for production."
 
-RiskAnalyzerTool:
-  class: "pqcmigrator.tools.custom_tool.RiskAnalyzerTool"
-  description: "Evaluates cryptographic assets from scan results and assigns risk levels."
+# RiskAnalyzerTool:
+#   class: "pqcmigrator.tools.custom_tool.RiskAnalyzerTool"
+#   description: "Evaluates cryptographic assets from scan results and assigns risk levels."
 
 # PlannerTool:
 #   class: "pqcmigrator.tools.custom_tool.PlannerTool"

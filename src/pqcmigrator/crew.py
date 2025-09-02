@@ -3,16 +3,16 @@ from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
 from dotenv import load_dotenv
-from pqcmigrator.tools.custom_tool import (
-    TLSScannerTool,
-    SSHScannerTool,
-    CodeScannerTool,
-    YARAScannerTool,
-    RiskAnalyzerTool,
-    # PlannerTool,
-    # MigratorTool,
-    # RollbackTool
-)
+
+from pqcmigrator.tools.scanner_agent.TLS_tool import TLSScannerTool
+from pqcmigrator.tools.scanner_agent.SSH_tool import SSHScannerTool
+from pqcmigrator.tools.scanner_agent.CODE_tool import CodeScannerTool
+from pqcmigrator.tools.scanner_agent.YARA_tool import YARAScannerTool
+# from pqcmigrator.tools.scanner_agent.RiskAnalyzerTool import RiskAnalyzerTool
+# from pqcmigrator.tools.scanner_agent.PlannerTool import PlannerTool
+# from pqcmigrator.tools.scanner_agent.MigratorTool import MigratorTool
+# from pqcmigrator.tools.scanner_agent.RollbackTool import RollbackTool
+
 
 
 load_dotenv()
@@ -49,9 +49,9 @@ class PQCMigrator():
         return YARAScannerTool()
     yara_scanner_tool.is_tool = True
 
-    def risk_analyzer_tool(self):
-        return RiskAnalyzerTool()
-    risk_analyzer_tool.is_tool = True
+    # def risk_analyzer_tool(self):
+    #     return RiskAnalyzerTool()
+    # risk_analyzer_tool.is_tool = True
 
     # def planner_tool(self):
     #     return PlannerTool()
@@ -73,12 +73,12 @@ class PQCMigrator():
             verbose=True
         )
 
-    @agent
-    def risk_analyzer(self) -> Agent:
-        return Agent(
-            config=self.agents_config['risk_analyzer'],
-            verbose=True
-        )
+    # @agent
+    # def risk_analyzer(self) -> Agent:
+    #     return Agent(
+    #         config=self.agents_config['risk_analyzer'],
+    #         verbose=True
+    #     )
 
     # @agent
     # def planner(self) -> Agent:
@@ -108,11 +108,11 @@ class PQCMigrator():
             config=self.tasks_config['scanner_task'],
         )
 
-    @task
-    def risk_analyzer_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['risk_analyzer_task'],
-        )
+    # @task
+    # def risk_analyzer_task(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config['risk_analyzer_task'],
+    #     )
 
     # @task
     # def planner_task(self) -> Task:

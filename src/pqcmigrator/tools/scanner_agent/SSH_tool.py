@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import subprocess, json, base64, hashlib, re, os, glob
-from typing import Type, Optional, Any, Dict, List
-from pydantic import BaseModel, Field
+from typing import Type, Optional, Any, Dict, List, ClassVar
+from pydantic import BaseModel, Field, ConfigDict
 
 # Optional: richer key parsing if installed
 try:
@@ -83,13 +83,13 @@ class SSHScannerTool(BaseTool):
       - scan_local_keys(paths=None) -> Dict[str, Any]
       - scan_ssh_agent() -> Dict[str, Any]
     """
+    model_config = ConfigDict(arbitrary_types_allowed=True, extra='ignore')
     name: str = "SSHScannerTool"
-    description: str = "Scans a host using ssh-keyscan to retrieve SSH key details (algorithm, size, fingerprints)."
+    description: str = "Scans a host for SSH key details (algorithm, size, fingerprints)."
     args_schema: Type[BaseModel] = SSHScannerInput
 
-    # Tunables
-    timeout: int = 8        # ssh-keyscan host-level timeout
-    use_keygen_enrich: bool = True  # try ssh-keygen -l enrichment
+    timeout: int = 8
+    use_keygen_enrich: bool = True
 
     # --------------- CrewAI entry ---------------
     def _run(self, host: str, port: int) -> str:

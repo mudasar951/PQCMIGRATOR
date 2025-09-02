@@ -17,7 +17,7 @@ def run():
     Run the PQC Migrator crew.
     """
     inputs = {
-        "prompt": "scan ssh 10.0.2.15",  # Example input
+        "prompt": "scan TLS on cytomate.net port 443",  # Example input
         "current_year": str(datetime.now().year)
     }
     

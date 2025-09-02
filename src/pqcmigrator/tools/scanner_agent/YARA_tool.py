@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import os, re, json, concurrent.futures
-from typing import Any, Dict, List, Optional, Tuple, Type
+from typing import Any, Dict, List, Optional, Tuple, Type, ClassVar
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime, timezone
 
 # Optional YARA import (graceful fallback if unavailable)
@@ -58,12 +59,13 @@ class YARAScannerTool(BaseTool):
 
     Stable interface: _run(paths: str, recursive=True, max_file_size_mb=10, threads=6) -> JSON string.
     """
+    model_config = ConfigDict(arbitrary_types_allowed=True, extra='ignore')
     name: str = "YARAScannerTool"
     description: str = "YARA-like scanner to detect key material and secrets. Uses yara-python if available; falls back to byte-patterns otherwise."
-    args_schema: Type[BaseModel] = YARAScannerInput
+    args_schema:    Type[BaseModel] = YARAScannerInput
 
     # Defaults for the tool
-    DEFAULT_RULES = r"""
+    DEFAULT_RULES: ClassVar[str] = r"""
 rule PossiblePrivateKey
 {
     strings:

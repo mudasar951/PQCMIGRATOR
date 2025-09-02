@@ -10,7 +10,8 @@ import hashlib
 import ipaddress
 from datetime import datetime, timezone
 from shutil import which
-from typing import Any, Dict, List, Optional, Tuple, Type
+from typing import Any, Dict, List, Optional, Tuple, Type, ClassVar
+from pydantic import BaseModel, Field, ConfigDict
 
 # Optional: only used if installed (you already used it in your previous class)
 try:
@@ -99,17 +100,24 @@ class TLSScannerTool(BaseTool):
         * Decodes leaf cert fields via `openssl x509 -text` (subject, issuer, serial, dates, SAN, CT SCTs)
     - If `cryptography` is installed, extracts leaf public key type and size.
     """
+    # Pydantic v2: tell it to ignore non-pydantic types nested in the model
+    model_config = ConfigDict(arbitrary_types_allowed=True, extra='ignore')
+
+    # These 3 are constants for the tool definition, not model fields
     name: str = "TLSScannerTool"
-    description: str = "Scans a host for TLS protocol details, leaf certificate & chain, ALPN, negotiated group, and KEM hints."
+    description: str = (
+        "Scans a host for TLS protocol details, leaf certificate & chain, ALPN, "
+        "negotiated group, and KEM hints."
+    )
     args_schema: Type[BaseModel] = TLSScannerInput
 
-    # ---------- Configurable timeouts ----------
-    timeout: int = 5        # TCP connect + OpenSSL s_client overall (sec)
+    # Configurable knobs — also constants (not per-instance fields)
+    timeout: int = 5        # TCP connect + s_client timeout (sec)
     read_timeout: int = 5   # post-handshake read timeout (sec)
-    openssl_enrich: bool = True  # Toggle OpenSSL enrichment
+    openssl_enrich: bool = True
 
-    # ---------- TLS version labels ----------
-    TLS_VERSION_LABELS = [
+    # TLS versions table — must be a ClassVar so pydantic doesn't treat it as a field
+    TLS_VERSION_LABELS: ClassVar[List[Tuple[str, ssl.TLSVersion]]] = [
         ("TLSv1.0", ssl.TLSVersion.TLSv1),
         ("TLSv1.1", ssl.TLSVersion.TLSv1_1),
         ("TLSv1.2", ssl.TLSVersion.TLSv1_2),

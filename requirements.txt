@@ -1,0 +1,19 @@
+# requirements.txt — PQC Scanner/Risk Analyzer
+
+# Core
+cryptography>=42.0.0
+pydantic>=2.0.0
+click>=8.1.0
+
+# YARA scanning
+yara-python>=4.3.0
+
+# Graphing / analysis (RiskAnalyzerAgent)
+networkx>=3.2.0
+pydot>=1.4.2
+
+# JSON / validation helpers
+python-dateutil>=2.8.2
+
+# Optional: if you use requests in colab_agent_kali bridge
+requests>=2.31.0

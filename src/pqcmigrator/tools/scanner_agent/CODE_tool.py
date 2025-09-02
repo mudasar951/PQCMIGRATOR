@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import os, re, json, base64, hashlib
-from typing import Any, Dict, List, Optional, Tuple, Type
-from pydantic import BaseModel, Field
+from typing import Any, Dict, List, Optional, Tuple, Type, ClassVar
+from pydantic import BaseModel, Field, ConfigDict
+
 
 # CrewAI / Tool base (with fallback to LangChain BaseTool)
 try:
@@ -42,22 +43,23 @@ class CodeScannerTool(BaseTool):
     - Skips binary files (NUL byte), huge files, and common vendor/cache dirs.
     - Heuristics aim to reduce noise but keep useful signals.
     """
+    model_config = ConfigDict(arbitrary_types_allowed=True, extra='ignore')
     name: str = "CodeScannerTool"
     description: str = "Scans code files for secrets, credentials, and weak cryptographic algorithm usage."
     args_schema: Type[BaseModel] = CodeScannerInput
 
     # Configurable knobs
-    DEFAULT_EXTS: Tuple[str, ...] = (
+    DEFAULT_EXTS: ClassVar[Tuple[str, ...]] = (
         ".py",".js",".ts",".tsx",".jsx",".java",".c",".cpp",".go",".rs",".sh",".rb",".php",
         ".json",".env",".yml",".yaml",".conf",".ini",".toml",".gradle",".cfg",
         ".pem",".key",".crt",".cer",".p12",".pfx",".der",".csr",
         ".txt",".md",".xml",".properties"
     )
-    SKIP_DIRS: Tuple[str, ...] = (
+    SKIP_DIRS: ClassVar[Tuple[str, ...]] = (
         ".git",".hg",".svn",".idea",".vscode","node_modules","dist","build",
         "__pycache__",".mypy_cache",".pytest_cache",".ruff_cache",".venv","venv",".cache","target",".gradle"
     )
-    MAX_FILE_BYTES: int = 2_000_000  # 2 MB per file cap
+    MAX_FILE_BYTES: int = 2_000_000
     CONTEXT_LINES: int = 3
 
     # Detection rules (compiled at init)
